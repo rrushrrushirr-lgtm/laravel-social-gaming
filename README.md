@@ -111,7 +111,7 @@ The frontend features a dynamic hero banner configurable via filesystem:
 1. **Clone the repo:**
 
    ```bash
-   git clone -b lite-13 https://github.com/promexdottme/laravel-social-gaming.git
+   git clone https://github.com/promexdottme/laravel-social-gaming.git
    ```
 2. **Install Dependencies:**
 
