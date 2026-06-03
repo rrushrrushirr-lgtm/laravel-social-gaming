@@ -24,7 +24,7 @@ The Lite version is free for testing and self-hosting. Sponsorship tiers only pr
 
 <div align="center">
   <h3>
-    <a href="https://github.com/sponsors/promexdotme">
+    <a href="https://discord.com/invite/T7HcUQzvEH">
       🚀 Click Here to Sponsor & Upgrade
     </a>
   </h3>
@@ -111,7 +111,7 @@ The frontend features a dynamic hero banner configurable via filesystem:
 1. **Clone the repo:**
 
    ```bash
-   git clone -b lite-13 https://github.com/gamingdotme/laravel-social-gaming.git
+   git clone -b lite-13 https://github.com/promexdottme/laravel-social-gaming.git
    ```
 2. **Install Dependencies:**
 
@@ -156,7 +156,7 @@ This Lite version relies on cloud assets to keep your deployment simple and chea
 If you have your own dedicated server (VPS) and want the full **40GB Game Asset Pack** + **Local Websocket Source Code**:
 
 * **[Subscribe for Shared Hosting Access / Google Drive Link]** - Get the full asset dump + access perks (no support included).
-* **[Join our Discord Community](https://discord.gg/nYHGyQ5q)** - Community discussion (no guaranteed replies).
+* **[Join our Discord Community](https://discord.com/invite/T7HcUQzvEH)** - Community discussion (no guaranteed replies).
 
 ---
 
