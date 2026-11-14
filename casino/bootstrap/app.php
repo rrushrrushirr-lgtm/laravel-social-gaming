@@ -2,6 +2,72 @@
 
 /*
 |--------------------------------------------------------------------------
+| Recreate runtime environment after a fresh deployment
+|--------------------------------------------------------------------------
+|
+| The installer writes casino/.env, but deploy containers are ephemeral.
+| Rebuild the demo configuration from EthioDeploy's managed DATABASE_URL
+| when that file is absent. Never commit database credentials to Git.
+|
+*/
+
+$envPath = dirname(__DIR__) . '/.env';
+
+if (!is_file($envPath)) {
+    $databaseUrl = getenv('DATABASE_URL') ?: ($_ENV['DATABASE_URL'] ?? '');
+
+    if ($databaseUrl !== '') {
+        $parts = parse_url($databaseUrl);
+
+        if (is_array($parts) && !empty($parts['host']) && !empty($parts['user']) && isset($parts['pass']) && !empty($parts['path'])) {
+            $domain = getenv('APP_URL') ?: 'https://laravel-social-gaming.ethiodeploy.app';
+            $domain = preg_replace('#^https?://#i', '', rtrim($domain, '/'));
+            $env = [
+                'APP_ENV' => 'production',
+                'APP_DEBUG' => 'false',
+                'APP_KEY' => 'base64:' . base64_encode(random_bytes(32)),
+                'APP_URL' => 'https://' . $domain,
+                'DB_CONNECTION' => 'mysql',
+                'DB_HOST' => $parts['host'],
+                'DB_PORT' => (string) ($parts['port'] ?? 3306),
+                'DB_DATABASE' => ltrim($parts['path'], '/'),
+                'DB_USERNAME' => rawurldecode($parts['user']),
+                'DB_PASSWORD' => rawurldecode($parts['pass']),
+                'DB_PREFIX' => 'w_',
+                'CACHE_DRIVER' => 'file',
+                'SESSION_DRIVER' => 'file',
+                'QUEUE_DRIVER' => 'sync',
+                'BROADCAST_DRIVER' => 'log',
+                'SESSION_LIFETIME' => '120',
+                'MAIL_MAILER' => 'log',
+                'MAIL_HOST' => '127.0.0.1',
+                'MAIL_PORT' => '2525',
+                'MAIL_USERNAME' => '',
+                'MAIL_PASSWORD' => '',
+                'MAIL_ENCRYPTION' => 'null',
+                'MAIL_FROM_ADDRESS' => 'no-reply@' . $domain,
+                'MAIL_FROM_NAME' => 'Social Gaming Demo',
+                'JWT_SECRET' => bin2hex(random_bytes(32)),
+                'MIN_ADD' => '100',
+                'MAX_ADD' => '1000000',
+                'MAX_INVITES' => '10',
+                'REGISTER_NOTIFY_EMAIL' => '',
+                'DEMO_KEY' => '',
+            ];
+
+            $lines = [];
+            foreach ($env as $key => $value) {
+                $value = str_replace(["\\\\", '"', "\r", "\n"], ["\\\\\\\\", '\\"', '', ''], (string) $value);
+                $lines[] = $key . '="' . $value . '"';
+            }
+
+            @file_put_contents($envPath, implode("\n", $lines) . "\n", LOCK_EX);
+        }
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
 | Load Environment Variables
 |--------------------------------------------------------------------------
 |
