@@ -7,7 +7,7 @@ namespace VanguardLTE\Http\Middleware
         {
             if( !file_exists(base_path('.env')) && !$request->is('install*') ) 
             {
-                return redirect()->to('install');
+                return redirect()->to('install.php');
             }
             if( file_exists(base_path('.env')) && $request->is('install*') && !$request->is('install/complete') ) 
             {
