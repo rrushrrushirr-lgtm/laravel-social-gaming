@@ -163,44 +163,88 @@ case '4':
     break;
 
 case '5':
-    // Define the path to the .env file
     $envFilePath = 'casino/.env';
 
-    // Generate .env file content
-    $envContent = "APP_ENV=production\n"
-                . "APP_DEBUG=false\n"
-                . "APP_KEY=base64:PPmTdK1I5SW0Ii0LGXPLQ8nqo+XOLqLIn05vcU4xE1Y=\n"
-                . "APP_URL=https://" . htmlspecialchars($_POST['domain_name']) . "\n\n"
-                . "DB_HOST=" . htmlspecialchars($_POST['db_host']) . "\n"
-                . "DB_DATABASE=" . htmlspecialchars($_POST['db_name']) . "\n"
-                . "DB_USERNAME=" . htmlspecialchars($_POST['db_user']) . "\n"
-                . "DB_PASSWORD=" . htmlspecialchars($_POST['db_pass']) . "\n"
-                . "DB_PREFIX=w_\n\n"
-                . "CACHE_DRIVER=database\n"
-                . "SESSION_DRIVER=database\n"
-                . "QUEUE_DRIVER=database\n"
-                . "BROADCAST_DRIVER=log\n"
-                . "SESSION_LIFETIME=172800\n\n"
-                . "MAIL_MAILER=smtp\n"
-                . "MAIL_HOST=" . htmlspecialchars($_POST['domain_name']) . "\n"
-                . "MAIL_PORT=465\n"
-                . "MAIL_USERNAME=" . htmlspecialchars($_POST['email']) . "\n"
-                . "MAIL_PASSWORD=" . htmlspecialchars($_POST['emailpass']) . "\n"
-                . "MAIL_ENCRYPTION=ssl\n"
-                . "MAIL_FROM_ADDRESS=" . htmlspecialchars($_POST['email']) . "\n"
-                . "MAIL_FROM_NAME=\n\n"
-                . "JWT_SECRET=aq1LOdXbvN4uJAUHNmdCileMzz8zxyPB\n\n"
-                . "MIN_ADD=100\n"
-                . "MAX_ADD=1000000\n\n"
-                . "MAX_INVITES=10\n\n"
-                . "REGISTER_NOTIFY_EMAIL=\n\n"
-                . "DEMO_KEY=";
+    try {
+        // Prefer the linked EthioDeploy MySQL addon's managed connection URL.
+        $databaseUrl = getenv('DATABASE_URL') ?: ($_ENV['DATABASE_URL'] ?? '');
+        if ($databaseUrl !== '') {
+            $parts = parse_url($databaseUrl);
+            if (!is_array($parts) || empty($parts['host']) || empty($parts['user']) || !isset($parts['pass']) || empty($parts['path'])) {
+                throw new RuntimeException('EthioDeploy DATABASE_URL is not a valid MySQL URL.');
+            }
+            $dbHost = $parts['host'];
+            $dbPort = isset($parts['port']) ? (int)$parts['port'] : 3306;
+            $dbName = ltrim($parts['path'], '/');
+            $dbUser = rawurldecode($parts['user']);
+            $dbPass = rawurldecode($parts['pass']);
+        } else {
+            $dbHost = trim($_POST['db_host'] ?? '');
+            $dbPort = 3306;
+            $dbName = trim($_POST['db_name'] ?? '');
+            $dbUser = trim($_POST['db_user'] ?? '');
+            $dbPass = $_POST['db_pass'] ?? '';
+        }
 
-    // Write the .env file
-    if (file_put_contents($envFilePath, $envContent) === false) {
-        $message = "Failed to write the .env file.";
-    } else {
-        $message = "The .env file has been created successfully.";
+        if ($dbHost === '' || $dbName === '' || $dbUser === '') {
+            throw new RuntimeException('Database connection details are incomplete.');
+        }
+
+        $domain = trim($_POST['domain_name'] ?? '');
+        $domain = preg_replace('#^https?://#i', '', $domain);
+        $domain = rtrim($domain, '/');
+        if ($domain === '') {
+            throw new RuntimeException('Enter the app domain, without https://.');
+        }
+
+        $env = [
+            'APP_ENV' => 'production',
+            'APP_DEBUG' => 'false',
+            'APP_KEY' => 'base64:' . base64_encode(random_bytes(32)),
+            'APP_URL' => 'https://' . $domain,
+            'DB_CONNECTION' => 'mysql',
+            'DB_HOST' => $dbHost,
+            'DB_PORT' => (string)$dbPort,
+            'DB_DATABASE' => $dbName,
+            'DB_USERNAME' => $dbUser,
+            'DB_PASSWORD' => $dbPass,
+            'DB_PREFIX' => 'w_',
+            'CACHE_DRIVER' => 'file',
+            'SESSION_DRIVER' => 'file',
+            'QUEUE_DRIVER' => 'sync',
+            'BROADCAST_DRIVER' => 'log',
+            'SESSION_LIFETIME' => '120',
+            'MAIL_MAILER' => 'log',
+            'MAIL_HOST' => '127.0.0.1',
+            'MAIL_PORT' => '2525',
+            'MAIL_USERNAME' => '',
+            'MAIL_PASSWORD' => '',
+            'MAIL_ENCRYPTION' => 'null',
+            'MAIL_FROM_ADDRESS' => 'no-reply@' . $domain,
+            'MAIL_FROM_NAME' => 'Social Gaming Demo',
+            'JWT_SECRET' => bin2hex(random_bytes(32)),
+            'MIN_ADD' => '100',
+            'MAX_ADD' => '1000000',
+            'MAX_INVITES' => '10',
+            'REGISTER_NOTIFY_EMAIL' => '',
+            'DEMO_KEY' => '',
+        ];
+
+        $envLines = [];
+        foreach ($env as $key => $value) {
+            // Quote values safely for dotenv; escape backslashes and quotes.
+            $value = str_replace(["\\", '"', "\r", "\n"], ["\\\\", '\\"', '', ''], (string)$value);
+            $envLines[] = $key . '="' . $value . '"';
+        }
+        $envContent = implode("\n", $envLines) . "\n";
+
+        if (file_put_contents($envFilePath, $envContent, LOCK_EX) === false) {
+            $message = "Failed to write the .env file. Check permissions for casino/.env.";
+        } else {
+            $message = "The .env file was created using the EthioDeploy database connection. Email sending is set to log mode for the demo.";
+        }
+    } catch (Throwable $e) {
+        $message = "Could not create .env: " . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
     }
     break;
 
