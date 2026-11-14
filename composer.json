@@ -1,0 +1,9 @@
+{
+  "name": "rrushrrushirr/ethiodeploy-php-extensions",
+  "description": "PHP extensions required by the nested casino application",
+  "type": "project",
+  "require": {
+    "ext-mysqli": "*",
+    "ext-redis": "*"
+  }
+}
