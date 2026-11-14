@@ -387,46 +387,46 @@ case '5':
     <form action="install.php" method="post">
         <h2>Database and Application Information</h2>
 
-        <label for="db_host">Database Host</label>         <input type="text" name="db_host" id="db_host" placeholder="Database Host" required value="<?php echo isset($_POST['db_host']) ? htmlspecialchars($_POST['db_host']) : ''; ?>">
+        <label for="db_host">Database Host</label>         <input type="text" name="db_host" id="db_host" placeholder="Database Host" value="<?php echo isset($_POST['db_host']) ? htmlspecialchars($_POST['db_host']) : ''; ?>">
 
         <label for="db_name">Database Name</label>
-        <input type="text" name="db_name" id="db_name" placeholder="Database Name" required value="<?php echo isset($_POST['db_name']) ? htmlspecialchars($_POST['db_name']) : ''; ?>">
+        <input type="text" name="db_name" id="db_name" placeholder="Database Name" value="<?php echo isset($_POST['db_name']) ? htmlspecialchars($_POST['db_name']) : ''; ?>">
 
         <label for="db_user">Database Username</label>
-        <input type="text" name="db_user" id="db_user" placeholder="Database Username" required value="<?php echo isset($_POST['db_user']) ? htmlspecialchars($_POST['db_user']) : ''; ?>">
+        <input type="text" name="db_user" id="db_user" placeholder="Database Username" value="<?php echo isset($_POST['db_user']) ? htmlspecialchars($_POST['db_user']) : ''; ?>">
 
         <label for="db_pass">Database Password</label>
-        <input type="password" name="db_pass" id="db_pass" placeholder="Database Password" required value="<?php echo isset($_POST['db_pass']) ? htmlspecialchars($_POST['db_pass']) : ''; ?>">
+        <input type="password" name="db_pass" id="db_pass" placeholder="Database Password" value="<?php echo isset($_POST['db_pass']) ? htmlspecialchars($_POST['db_pass']) : ''; ?>">
 
         <label for="email">From Email</label>
-        <input type="email" name="email" id="email" placeholder="From Email" required value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
+        <input type="email" name="email" id="email" placeholder="From Email" value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
 
         <label for="emailusername">Email Username</label>
-        <input type="text" name="emailusername" id="emailusername" placeholder="Email username Typically same as your email" required value="<?php echo isset($_POST['emailusername']) ? htmlspecialchars($_POST['emailusername']) : ''; ?>">
+        <input type="text" name="emailusername" id="emailusername" placeholder="Email username Typically same as your email" value="<?php echo isset($_POST['emailusername']) ? htmlspecialchars($_POST['emailusername']) : ''; ?>">
 
         <label for="emailpass">SMTP Password</label>
-        <input type="password" name="emailpass" id="emailpass" placeholder="Your SMTP email/username Password" required value="<?php echo isset($_POST['emailpass']) ? htmlspecialchars($_POST['emailpass']) : ''; ?>">
+        <input type="password" name="emailpass" id="emailpass" placeholder="Your SMTP email/username Password" value="<?php echo isset($_POST['emailpass']) ? htmlspecialchars($_POST['emailpass']) : ''; ?>">
 
         <label for="emailserver">SMTP Host</label>
-        <input type="text" name="emailserver" id="emailserver" placeholder="Email SMTP Host typically same as your domain" required value="<?php echo isset($_POST['emailserver']) ? htmlspecialchars($_POST['emailserver']) : ''; ?>">
+        <input type="text" name="emailserver" id="emailserver" placeholder="Email SMTP Host typically same as your domain" value="<?php echo isset($_POST['emailserver']) ? htmlspecialchars($_POST['emailserver']) : ''; ?>">
 
         <label for="domain_name">Domain Name</label>
         <input type="text" name="domain_name" id="domain_name" placeholder="Domain Name" required value="<?php echo isset($_POST['domain_name']) ? htmlspecialchars($_POST['domain_name']) : ''; ?>">
 
         <label for="admin_password">Admin Password</label>
-        <input type="password" name="admin_password" id="admin_password" placeholder="Default Admin Password" required value="<?php echo isset($_POST['admin_password']) ? htmlspecialchars($_POST['admin_password']) : ''; ?>">
+        <input type="password" name="admin_password" id="admin_password" placeholder="Default Admin Password" value="<?php echo isset($_POST['admin_password']) ? htmlspecialchars($_POST['admin_password']) : ''; ?>">
 
         <label for="user_password">User Password</label>
-        <input type="password" name="user_password" id="user_password" placeholder="Default User Password" required value="<?php echo isset($_POST['user_password']) ? htmlspecialchars($_POST['user_password']) : ''; ?>">
+        <input type="password" name="user_password" id="user_password" placeholder="Default User Password" value="<?php echo isset($_POST['user_password']) ? htmlspecialchars($_POST['user_password']) : ''; ?>">
 
         <label for="port1">Port 1</label>
-        <input type="number" name="port1" id="port1" placeholder="Port 1" required value="<?php echo isset($_POST['port1']) ? htmlspecialchars($_POST['port1']) : '22188'; ?>">
+        <input type="number" name="port1" id="port1" placeholder="Port 1" value="<?php echo isset($_POST['port1']) ? htmlspecialchars($_POST['port1']) : '22188'; ?>">
 
         <label for="port2">Port 2</label>
-        <input type="number" name="port2" id="port2" placeholder="Port 2" required value="<?php echo isset($_POST['port2']) ? htmlspecialchars($_POST['port2']) : '22154'; ?>">
+        <input type="number" name="port2" id="port2" placeholder="Port 2" value="<?php echo isset($_POST['port2']) ? htmlspecialchars($_POST['port2']) : '22154'; ?>">
 
         <label for="port3">Port 3</label>
-        <input type="number" name="port3" id="port3" placeholder="Port 3" required value="<?php echo isset($_POST['port3']) ? htmlspecialchars($_POST['port3']) : '22197'; ?>">
+        <input type="number" name="port3" id="port3" placeholder="Port 3" value="<?php echo isset($_POST['port3']) ? htmlspecialchars($_POST['port3']) : '22197'; ?>">
 
         <!-- Submit buttons for steps -->
         <button type="submit" name="step" value="1">Check DB, Redis And PHP Version</button>
