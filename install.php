@@ -13,25 +13,42 @@ case '1':
     $redisInstalled = extension_loaded('redis');
     $dbConnectionStatus = 'Not connected';
 
-    // Attempt database connection without allowing mysqli strict mode to crash the installer.
+    // EthioDeploy injects the linked MySQL addon's credentials as DATABASE_URL.
+    // Prefer that managed value; only use the manual fields when it is absent.
     if (!extension_loaded('mysqli')) {
         $dbConnectionStatus = 'Failed: PHP mysqli extension is not installed.';
     } else {
         try {
             mysqli_report(MYSQLI_REPORT_OFF);
-            $dbHost = trim($_POST['db_host'] ?? '');
-            $dbUser = trim($_POST['db_user'] ?? '');
-            $dbPass = $_POST['db_pass'] ?? '';
-            $dbName = trim($_POST['db_name'] ?? '');
+            $databaseUrl = getenv('DATABASE_URL') ?: ($_ENV['DATABASE_URL'] ?? '');
+            if ($databaseUrl !== '') {
+                $parts = parse_url($databaseUrl);
+                if (!is_array($parts) || empty($parts['host']) || empty($parts['user']) || !isset($parts['pass']) || empty($parts['path'])) {
+                    throw new RuntimeException('The managed DATABASE_URL is not a valid MySQL connection URL.');
+                }
+                $dbHost = $parts['host'];
+                $dbUser = rawurldecode($parts['user']);
+                $dbPass = rawurldecode($parts['pass']);
+                $dbName = ltrim($parts['path'], '/');
+                $dbPort = isset($parts['port']) ? (int)$parts['port'] : 3306;
+                $connectionSource = 'EthioDeploy managed DATABASE_URL';
+            } else {
+                $dbHost = trim($_POST['db_host'] ?? '');
+                $dbUser = trim($_POST['db_user'] ?? '');
+                $dbPass = $_POST['db_pass'] ?? '';
+                $dbName = trim($_POST['db_name'] ?? '');
+                $dbPort = 3306;
+                $connectionSource = 'manual database fields';
+            }
 
             if ($dbHost === '' || $dbUser === '' || $dbName === '') {
-                $dbConnectionStatus = 'Failed: enter database host, name and username.';
+                $dbConnectionStatus = 'Failed: database host, name and username are missing.';
             } else {
-                $mysqli = new mysqli($dbHost, $dbUser, $dbPass, $dbName);
+                $mysqli = new mysqli($dbHost, $dbUser, $dbPass, $dbName, $dbPort);
                 if ($mysqli->connect_errno) {
-                    $dbConnectionStatus = 'Failed to connect: ' . $mysqli->connect_error;
+                    $dbConnectionStatus = 'Failed to connect using ' . $connectionSource . ': ' . $mysqli->connect_error;
                 } else {
-                    $dbConnectionStatus = 'Connected successfully';
+                    $dbConnectionStatus = 'Connected successfully using ' . $connectionSource;
                     $mysqli->close();
                 }
             }
@@ -40,13 +57,12 @@ case '1':
         }
     }
 
-    // Construct the message
     $message = "PHP Version (recommended 8+) Your PHP Version is: " . htmlspecialchars($phpVersion, ENT_QUOTES, 'UTF-8') . "\n"
              . "<br>Redis Installed (Required for many games): " . ($redisInstalled ? 'Yes' : 'No') . "<br>"
              . "Database Connection : " . htmlspecialchars($dbConnectionStatus, ENT_QUOTES, 'UTF-8') . "<br> PM2 tests require SSH, https://pm2.io/docs/runtime/guide/installation/";
     break;
 
-case '2':
+    case '2':
     $sqlFile = 'v10.sql';
 
     if (file_exists($sqlFile)) {
