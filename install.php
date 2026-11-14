@@ -13,18 +13,37 @@ case '1':
     $redisInstalled = extension_loaded('redis');
     $dbConnectionStatus = 'Not connected';
 
-    // Attempt database connection
-    $mysqli = new mysqli($_POST['db_host'], $_POST['db_user'], $_POST['db_pass'], $_POST['db_name']);
-    if (!$mysqli->connect_error) {
-        $dbConnectionStatus = 'Connected successfully';
+    // Attempt database connection without allowing mysqli strict mode to crash the installer.
+    if (!extension_loaded('mysqli')) {
+        $dbConnectionStatus = 'Failed: PHP mysqli extension is not installed.';
     } else {
-        $dbConnectionStatus = 'Failed to connect: ' . $mysqli->connect_error;
+        try {
+            mysqli_report(MYSQLI_REPORT_OFF);
+            $dbHost = trim($_POST['db_host'] ?? '');
+            $dbUser = trim($_POST['db_user'] ?? '');
+            $dbPass = $_POST['db_pass'] ?? '';
+            $dbName = trim($_POST['db_name'] ?? '');
+
+            if ($dbHost === '' || $dbUser === '' || $dbName === '') {
+                $dbConnectionStatus = 'Failed: enter database host, name and username.';
+            } else {
+                $mysqli = new mysqli($dbHost, $dbUser, $dbPass, $dbName);
+                if ($mysqli->connect_errno) {
+                    $dbConnectionStatus = 'Failed to connect: ' . $mysqli->connect_error;
+                } else {
+                    $dbConnectionStatus = 'Connected successfully';
+                    $mysqli->close();
+                }
+            }
+        } catch (Throwable $e) {
+            $dbConnectionStatus = 'Database check error: ' . $e->getMessage();
+        }
     }
 
     // Construct the message
-    $message = "PHP Version (recommended 8+) Your PHP Version is: $phpVersion\n"
+    $message = "PHP Version (recommended 8+) Your PHP Version is: " . htmlspecialchars($phpVersion, ENT_QUOTES, 'UTF-8') . "\n"
              . "<br>Redis Installed (Required for many games): " . ($redisInstalled ? 'Yes' : 'No') . "<br>"
-             . "Database Connection : $dbConnectionStatus"."<br> PM2 tests require SSH, https://pm2.io/docs/runtime/guide/installation/";
+             . "Database Connection : " . htmlspecialchars($dbConnectionStatus, ENT_QUOTES, 'UTF-8') . "<br> PM2 tests require SSH, https://pm2.io/docs/runtime/guide/installation/";
     break;
 
 case '2':
