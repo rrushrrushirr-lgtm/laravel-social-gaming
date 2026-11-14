@@ -14,6 +14,8 @@
     "repositories": [],
     "require": {
         "php": "^8.2",
+        "ext-mysqli": "*",
+        "ext-redis": "*",
         "anlutro/l4-settings": "^1.0",
         "bacon/bacon-qr-code": "^2.0",
         "barryvdh/laravel-debugbar": "^3.13",
@@ -33,7 +35,6 @@
         "mobiledetect/mobiledetectlib": "^2.8",
         "paragonie/random_compat": "^2.0",
         "php-open-source-saver/jwt-auth": "^2.0",
-        "pragmarx/google2fa-laravel": "^2.0",
         "predis/predis": "^2.0",
         "proengsoft/laravel-jsvalidation": "^4.9",
         "spatie/db-dumper": "^3.0",
@@ -51,7 +52,7 @@
             "database/factories"
         ],
         "psr-4": {
-            "VanguardLTE\\": "app/"
+            "VanguardLTE\\\\": "app/"
         },
         "files": [
             "app/Support/helpers.php"
@@ -59,7 +60,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Tests\\\\": "tests/"
         }
     },
     "extra": {
@@ -75,7 +76,7 @@
             "@php artisan key:generate"
         ],
         "post-autoload-dump": [
-            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "Illuminate\\\\Foundation\\\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover"
         ]
     },
